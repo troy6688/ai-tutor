@@ -1,0 +1,60 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.egg-info/
+*.egg
+
+# 数据库文件（包含用户数据，不上传）
+*.db
+*.sqlite
+*.sqlite3
+
+# 环境变量（包含密钥，不上传）
+.env
+.env.local
+.env.*.local
+
+# 备份文件
+*.bak
+*.bak-*
+*.before-restore
+*.restylebak
+
+# IDE / 编辑器
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS 文件
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# 日志文件
+*.log
+
+# 临时文件
+*.tmp
+*.temp
+
+# Node.js（如果后续加了前端构建工具）
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# 构建输出
+dist/
+build/
+
+# 运行时数据（自动生成）
+backend/data/progress.json
+backend/data/app.db
+
+# 部署配置（包含服务器信息）
+deploy.sh
+_deploy*.py

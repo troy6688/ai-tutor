@@ -1,0 +1,238 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI 通识知识库</title>
+<link rel="manifest" href="/manifest.json">
+<link rel="icon" type="image/png" href="/icons/favicon.png">
+<meta name="theme-color" content="#5e70fa">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="AI智课">
+<link rel="apple-touch-icon" href="/icons/icon-192.png">
+<link rel="apple-touch-icon" sizes="152x152" href="/icons/icon-152.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/icons/icon-192.png">
+<meta name="msapplication-TileImage" content="/icons/icon-144.png">
+<meta name="msapplication-TileColor" content="#5e70fa">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: "Microsoft YaHei", sans-serif; display: flex; height: 100vh; background: #f5f6f8; }
+    .sidebar { width: 280px; background: #fff; border-right: 1px solid #e5e7eb; display: flex; flex-direction: column; }
+    .sidebar h2 { padding: 16px; font-size: 16px; border-bottom: 1px solid #e5e7eb; }
+    .grade-bar { padding: 12px 16px; border-bottom: 1px solid #e5e7eb; }
+    .grade-bar select { width: 100%; padding: 8px; border: 1px solid #d1d5db; border-radius: 6px; }
+    .catalog { flex: 1; overflow-y: auto; padding: 8px; }
+    .chapter { font-weight: bold; color: #374151; padding: 8px 4px; font-size: 14px; }
+    .section { color: #6b7280; padding: 4px 8px; font-size: 13px; }
+    .point { color: #2563eb; padding: 6px 16px; cursor: pointer; font-size: 13px; border-radius: 6px; }
+    .point:hover { background: #eff6ff; }
+    .point.active { background: #dbeafe; font-weight: bold; }
+    .main { flex: 1; overflow-y: auto; padding: 24px; }
+    .card { background: #fff; border-radius: 10px; padding: 20px; margin-bottom: 16px; box-shadow: 0 1px 3px rgba(0,0,0,.08); }
+    .card h3 { font-size: 15px; margin-bottom: 12px; color: #111827; }
+    video { width: 100%; border-radius: 8px; background: #000; }
+    .content { line-height: 1.8; color: #374151; white-space: pre-wrap; }
+    .keywords span { display: inline-block; background: #fef3c7; color: #92400e; padding: 2px 8px; border-radius: 12px; margin: 0 4px 4px 0; font-size: 12px; }
+    .quiz-item { border: 1px solid #e5e7eb; border-radius: 8px; padding: 12px; margin-bottom: 10px; }
+    .quiz-item .stem { margin-bottom: 8px; }
+    .option { display: block; margin: 4px 0; }
+    .btn { padding: 8px 16px; border: none; border-radius: 6px; background: #2563eb; color: #fff; cursor: pointer; font-size: 13px; }
+    .btn:hover { background: #1d4ed8; }
+    .chat-box { height: 240px; overflow-y: auto; border: 1px solid #e5e7eb; border-radius: 8px; padding: 12px; margin-bottom: 10px; }
+    .chat-line { margin-bottom: 8px; }
+    .chat-line.user { text-align: right; color: #2563eb; }
+    .chat-input { display: flex; gap: 8px; }
+    .chat-input input { flex: 1; padding: 8px; border: 1px solid #d1d5db; border-radius: 6px; }
+    .grade-result { margin-top: 10px; font-weight: bold; }
+    .explain { color: #6b7280; font-size: 12px; }
+  </style>
+</head>
+<body>
+  <aside class="sidebar">
+    <h2>📚 AI 通识知识库</h2>
+    <div class="grade-bar">
+      <select id="grade" onchange="loadCatalog()">
+        <option value="">全部学段</option>
+        <option value="小学">小学</option>
+        <option value="初中">初中</option>
+        <option value="高中">高中</option>
+      </select>
+    </div>
+    <div class="catalog" id="catalog">加载中...</div>
+  </aside>
+
+  <main class="main">
+    <div class="card" id="videoCard">
+      <h3>视频展示</h3>
+      <video id="player" controls></video>
+      <div id="videoHint" style="color:#9ca3af;font-size:13px;">点击目录中的知识点查看视频</div>
+    </div>
+
+    <div class="card" id="detailCard">
+      <h3>讲解内容</h3>
+      <div id="detail" style="color:#9ca3af;">请选择知识点</div>
+    </div>
+
+    <div class="card" id="quizCard">
+      <h3>回答问题</h3>
+      <div id="quiz">请选择知识点</div>
+      <button class="btn" id="submitBtn" onclick="submitQuiz()" style="display:none;">提交作答</button>
+      <div class="grade-result" id="gradeResult"></div>
+    </div>
+
+    <div class="card">
+      <h3>AI 对话</h3>
+      <div class="chat-box" id="chatBox"></div>
+      <div class="chat-input">
+        <input id="chatInput" placeholder="输入你的问题..." onkeydown="if(event.key==='Enter')sendChat()">
+        <button class="btn" onclick="sendChat()">发送</button>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    const API = ''; // 同源部署，无需前缀
+    let currentPoint = null;
+
+    async function j(url, opts) {
+      const r = await fetch(url, opts);
+      return r.json();
+    }
+
+    async function loadCatalog() {
+      const grade = document.getElementById('grade').value;
+      const res = await j(`/api/catalog${grade ? '?grade=' + encodeURIComponent(grade) : ''}`);
+      const data = res.data;
+      const el = document.getElementById('catalog');
+      el.innerHTML = '';
+      data.units.forEach(u => {
+        const ch = document.createElement('div');
+        ch.className = 'chapter';
+        ch.textContent = u.chapter;
+        el.appendChild(ch);
+        u.sections.forEach(s => {
+          if (s.section) {
+            const sec = document.createElement('div');
+            sec.className = 'section';
+            sec.textContent = s.section;
+            el.appendChild(sec);
+          }
+          s.points.forEach(p => {
+            const d = document.createElement('div');
+            d.className = 'point';
+            d.textContent = p.title;
+            d.onclick = () => openPoint(p.id, d);
+            el.appendChild(d);
+          });
+        });
+      });
+    }
+
+    async function openPoint(id, node) {
+      document.querySelectorAll('.point').forEach(x => x.classList.remove('active'));
+      if (node) node.classList.add('active');
+      currentPoint = id;
+      const res = await j(`/api/points/${id}`);
+      const p = res.data;
+      document.getElementById('detail').innerHTML = `<div class="keywords">${(p.keywords||[]).map(k=>`<span>${k}</span>`).join('')}</div><div class="content">${p.content}</div>`;
+      const player = document.getElementById('player');
+      if (p.video) {
+        player.src = `/assets/videos/${p.video}`;
+        player.style.display = 'block';
+        document.getElementById('videoHint').style.display = 'none';
+      } else {
+        player.style.display = 'none';
+        document.getElementById('videoHint').style.display = 'block';
+        document.getElementById('videoHint').textContent = '暂无视频（请组员将视频放入 assets/videos/）';
+      }
+      await loadQuiz(id);
+    }
+
+    async function loadQuiz(id) {
+      const res = await j(`/api/points/${id}/quiz`);
+      const quiz = res.data.quiz;
+      const el = document.getElementById('quiz');
+      el.innerHTML = '';
+      if (!quiz.length) { el.textContent = '该知识点暂无题目'; document.getElementById('submitBtn').style.display='none'; return; }
+      quiz.forEach((q, i) => {
+        const d = document.createElement('div');
+        d.className = 'quiz-item';
+        let html = `<div class="stem">${i+1}. ${q.stem}</div>`;
+        if (q.type === 'choice' || q.type === 'multi') {
+          q.options.forEach((o, j) => {
+            const letter = String.fromCharCode(65+j);
+            const mtype = q.type === 'multi' ? 'checkbox' : 'radio';
+            html += `<label class="option"><input type="${mtype}" name="q${i}" value="${letter}"> ${o}</label>`;
+          });
+        } else {
+          html += `<input type="text" class="q-input" data-i="${i}" style="width:100%;padding:6px;border:1px solid #d1d5db;border-radius:4px;">`;
+        }
+        d.innerHTML = html;
+        el.appendChild(d);
+      });
+      document.getElementById('submitBtn').style.display = 'block';
+      document.getElementById('gradeResult').innerHTML = '';
+    }
+
+    async function submitQuiz() {
+      const quiz = document.getElementById('quiz').children;
+      const answers = [];
+      for (let i = 0; i < quiz.length; i++) {
+        const q = quiz[i];
+        const text = q.querySelector('.q-input');
+        if (text) { answers.push(text.value); continue; }
+        const checked = Array.from(q.querySelectorAll('input:checked')).map(x => x.value);
+        answers.push(checked.join(''));
+      }
+      const res = await j('/api/quiz/grade', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ point_id: currentPoint, answers }),
+      });
+      const d = res.data;
+      document.getElementById('gradeResult').innerHTML =
+        `得分：${d.correct} / ${d.total}`;
+      await fetch('/api/progress', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ point_id: currentPoint, correct: d.correct, total: d.total }),
+      });
+      alert(`答对 ${d.correct}/${d.total} 题`);
+    }
+
+    async function sendChat() {
+      const input = document.getElementById('chatInput');
+      const msg = input.value.trim();
+      if (!msg) return;
+      const box = document.getElementById('chatBox');
+      box.innerHTML += `<div class="chat-line user">我：${msg}</div>`;
+      input.value = '';
+      const grade = document.getElementById('grade').value || '小学';
+      const res = await j('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: msg, grade }),
+      });
+      const reply = res.data.reply || res.message;
+      box.innerHTML += `<div class="chat-line">AI：${reply}</div>`;
+      box.scrollTop = box.scrollHeight;
+    }
+
+    loadCatalog();
+  </script>
+<script>
+// 注册 Service Worker（PWA 离线缓存 + 安装到桌面）
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function() {
+    navigator.serviceWorker.register('/sw.js').then(function(reg) {
+      console.log('[PWA] Service Worker 注册成功:', reg.scope);
+    }).catch(function(err) {
+      console.warn('[PWA] Service Worker 注册失败:', err);
+    });
+  });
+}
+</script></body>
+</html>
+
+

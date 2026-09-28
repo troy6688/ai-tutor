@@ -1,0 +1,237 @@
+﻿<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>AI 智课 · 登录</title>
+<link rel="manifest" href="/manifest.json">
+<link rel="icon" type="image/png" href="/icons/favicon.png">
+<meta name="theme-color" content="#5e70fa">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="AI智课">
+<link rel="apple-touch-icon" href="/icons/icon-192.png">
+<link rel="apple-touch-icon" sizes="152x152" href="/icons/icon-152.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/icons/icon-192.png">
+<meta name="msapplication-TileImage" content="/icons/icon-144.png">
+<meta name="msapplication-TileColor" content="#5e70fa">
+<meta name="description" content="AI 通识课学习平台，覆盖小学、初中、高中全学段 AI 知识，动画讲解 + AI 助教，轻松入门人工智能。">
+<meta name="keywords" content="人工智能,AI学习,AI通识课,中小学AI,编程教育,机器学习,深度学习">
+<meta name="author" content="AI 智课">
+<meta property="og:title" content="AI 智课 · 登录注册">
+<meta property="og:description" content="AI 通识课学习平台，覆盖小学、初中、高中全学段 AI 知识，动画讲解 + AI 助教，轻松入门人工智能。">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="zh_CN"><link rel="stylesheet" href="assets/app.css?v=20260927-pwa">
+<style>
+  /* 隐私政策相关 */
+  .privacy-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    margin: 16px 0 4px;
+    font-size: 13px;
+    color: #6b7280;
+    line-height: 1.5;
+  }
+  .privacy-row input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    margin-top: 2px;
+    accent-color: #8b5cf6;
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+  .privacy-row label {
+    cursor: pointer;
+    user-select: none;
+  }
+  .privacy-row a {
+    color: #8b5cf6;
+    text-decoration: none;
+    font-weight: 500;
+  }
+  .privacy-row a:hover {
+    text-decoration: underline;
+  }
+  .privacy-error {
+    color: #ef4444;
+    font-size: 12px;
+    margin-bottom: 8px;
+    display: none;
+  }
+  .privacy-error.show {
+    display: block;
+  }
+
+  /* 隐私政策弹窗 */
+  .privacy-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .privacy-modal[hidden] {
+    display: none;
+  }
+  .privacy-mask {
+    position: absolute;
+    inset: 0;
+    background: rgba(30, 27, 75, 0.5);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+  }
+  .privacy-dialog {
+    position: relative;
+    width: 90%;
+    max-width: 480px;
+    background: #fff;
+    border-radius: 18px;
+    box-shadow: 0 20px 60px rgba(139, 92, 246, 0.25);
+    padding: 32px 28px 24px;
+    animation: privacyPop 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  @keyframes privacyPop {
+    from { opacity: 0; transform: scale(0.9) translateY(20px); }
+    to { opacity: 1; transform: scale(1) translateY(0); }
+  }
+  .privacy-icon {
+    width: 56px;
+    height: 56px;
+    margin: 0 auto 16px;
+    background: linear-gradient(135deg, #8b5cf6, #6366f1);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+  }
+  .privacy-dialog h3 {
+    margin: 0 0 16px;
+    text-align: center;
+    font-size: 20px;
+    font-weight: 700;
+    color: #1e1b4b;
+  }
+  .privacy-content {
+    max-height: 300px;
+    overflow-y: auto;
+    padding-right: 8px;
+    margin-bottom: 20px;
+    font-size: 14px;
+    line-height: 1.7;
+    color: #4b5563;
+  }
+  .privacy-content p { margin: 0 0 10px; }
+  .privacy-content ul { margin: 0 0 10px; padding-left: 20px; }
+  .privacy-content li { margin-bottom: 6px; }
+  .privacy-close-btn {
+    width: 100%;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 10px;
+    background: linear-gradient(135deg, #8b5cf6, #6366f1);
+    color: #fff;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .privacy-close-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(139, 92, 246, 0.35);
+  }
+</style></head><body><div class="shell"><header class="topbar"><div class="brand"><div class="brand-mark">✦</div><div>AI 智课<small>AI LEARNING PLATFORM</small></div></div></header><main class="auth-wrap"><section class="glass gradient-border auth-card"><div class="hero-icon">✦</div><div class="eyebrow" id="modeEyebrow">WELCOME BACK</div><h1 id="modeTitle">欢迎来到 AI 智课</h1><p class="muted">用更直观的方式学习人工智能知识，并随时向 AI 学习助手提问。</p><div class="form"><div class="field"><label>用户名</label><input class="input" id="username" placeholder="请输入用户名"></div><div class="field"><label>密码</label><input class="input" type="password" id="password" placeholder="请输入密码（至少6位）"></div><div class="field" id="confirmField" style="display:none"><label>确认密码</label><input class="input" type="password" id="password2" placeholder="再输一次密码"></div>
+<div class="privacy-row">
+  <input type="checkbox" id="privacyCheck">
+  <label for="privacyCheck">我已阅读并同意<a href="javascript:void(0)" onclick="showPrivacyModal()">《隐私政策》</a>和<a href="javascript:void(0)" onclick="showPrivacyModal()">《用户协议》</a></label>
+</div>
+<div class="privacy-error" id="privacyError">请先阅读并同意隐私政策</div>
+<button class="btn-primary full" id="mainBtn" onclick="doLogin()">登录</button><div class="divider">还没有账号？</div><button class="btn-primary full" style="opacity:.82" id="regBtn" onclick="toggleReg()">注册新账号</button><div class="divider" id="tip"></div></div></section></main></div>
+
+<!-- 隐私政策弹窗 -->
+<div class="privacy-modal" id="privacyModal" hidden>
+  <div class="privacy-mask" onclick="hidePrivacyModal()"></div>
+  <div class="privacy-dialog">
+    <div class="privacy-icon">🔒</div>
+    <h3>隐私政策与用户协议</h3>
+    <div class="privacy-content">
+      <p>欢迎使用 AI 智课学习平台！为了保障您的权益，请在使用前仔细阅读以下内容：</p>
+      <ul>
+        <li><b>数据收集：</b>我们仅收集必要的账号信息和学习进度数据，用于优化您的学习体验。</li>
+        <li><b>语音功能：</b>语音提问和朗读功能仅在您主动点击时启用，录音不会被存储到服务器。</li>
+        <li><b>AI 问答：</b>AI 回答仅供学习参考，不构成专业建议，请自行判断内容的准确性。</li>
+        <li><b>信息安全：</b>我们采用加密技术保护您的个人信息，不会向第三方泄露。</li>
+        <li><b>Cookie 使用：</b>本站使用本地存储记录您的登录状态和学习进度，可随时在浏览器设置中清除。</li>
+        <li><b>用户责任：</b>请妥善保管您的账号密码，不要与他人共享账号。</li>
+      </ul>
+      <p style="text-align:center;color:#6b7280;font-size:13px;margin-top:12px;">感谢您的信任，祝您学习愉快！</p>
+    </div>
+    <button class="privacy-close-btn" onclick="hidePrivacyModal()">我知道了</button>
+  </div>
+</div>
+
+<script src="assets/app.js?v=20260927-pwa"></script><script>
+let regMode=false;
+function toggleReg(){
+  regMode=!regMode;
+  document.getElementById('confirmField').style.display=regMode?'block':'none';
+  document.getElementById('modeTitle').textContent=regMode?'创建新账号':'欢迎来到 AI 智课';
+  document.getElementById('modeEyebrow').textContent=regMode?'CREATE ACCOUNT':'WELCOME BACK';
+  document.getElementById('mainBtn').textContent=regMode?'完成注册':'登录';
+  document.getElementById('regBtn').textContent=regMode?'返回登录':'注册新账号';
+  document.getElementById('tip').textContent='';
+  document.getElementById('privacyError').classList.remove('show');
+}
+
+function showPrivacyModal() {
+  document.getElementById('privacyModal').removeAttribute('hidden');
+}
+function hidePrivacyModal() {
+  document.getElementById('privacyModal').setAttribute('hidden', '');
+}
+
+async function doLogin(){
+  const u=document.getElementById('username').value.trim();
+  const p=document.getElementById('password').value;
+  const tip=document.getElementById('tip');
+  const privacyCheck = document.getElementById('privacyCheck');
+  const privacyError = document.getElementById('privacyError');
+  
+  if(!u||!p){tip.textContent='请输入用户名和密码';return}
+  
+  // 检查隐私政策勾选
+  if (!privacyCheck.checked) {
+    privacyError.classList.add('show');
+    tip.textContent = '';
+    return;
+  }
+  privacyError.classList.remove('show');
+  
+  try{
+    if(regMode){
+      const p2=document.getElementById('password2').value;
+      if(p!==p2){tip.textContent='两次密码不一致';return}
+      await registerUser(u,p);
+    }else{
+      await loginUser(u,p);
+    }
+    go('grade.html');
+  }catch(e){tip.textContent=e.message||'操作失败';}
+}
+bindEnter('username',doLogin);
+bindEnter('password',doLogin);
+bindEnter('password2',doLogin);
+</script><script>
+// 注册 Service Worker（PWA 离线缓存 + 安装到桌面）
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function() {
+    navigator.serviceWorker.register('/sw.js').then(function(reg) {
+      console.log('[PWA] Service Worker 注册成功:', reg.scope);
+    }).catch(function(err) {
+      console.warn('[PWA] Service Worker 注册失败:', err);
+    });
+  });
+}
+</script></body></html>
+
+
+
+
+
